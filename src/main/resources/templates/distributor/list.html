@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Distributor</title>
+</head>
+<body>
+    <h1>List Distributor</h1>
+    <h1 th:text="${errorMessage}"
+        th:if="${errorMessage != 'SUCCESS'}"></h1>
+    <a href="/distributor/create" th:text="Create"></a>
+    <table th:if="${errorMessage == 'SUCCESS'}" border="1">
+        <tr>
+            <td>Id</td>
+            <td>Distributor Name</td>
+            <td>Action</td>
+        </tr>
+        <tr th:each="dtbt : ${lstDistributors}">
+            <td th:text="${dtbt.id}"></td>
+            <td th:text="${dtbt.name}"></td>
+            <td>
+                <a th:href="@{/category/distributor/} + ${dtbt.id} + @{/list}" th:text="Categories"></a>
+                <a th:href="@{/distributor/edit/} + ${dtbt.id}" th:text="Edit"></a>
+                <a th:href="@{/distributor/delete/} + ${dtbt.id}" th:text="Delete"></a>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

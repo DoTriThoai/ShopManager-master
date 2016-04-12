@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Distributor - Edit</title>
+</head>
+<body>
+    <h1>Edit Distributor</h1>
+    <h2><span th:text="${errorMessage}" th:if="${errorMessage}!='NONE'"/> </h2>
+    <form action="#" method="post" th:if="${errorMessage}=='NONE' or ${errorMessage}=='Update Distributor Success'">
+        <table>
+            <tr>
+                <td>Name</td>
+                <td><input type="text" name="txtName" id="txtName" th:value="${distributor.name}"/></td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="Update"/></td>
+            </tr>
+        </table>
+    </form>
+    <a href="/distributor/list" th:text="List"></a>
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Category - Edit</title>
+</head>
+<body>
+    <h1>Edit Category</h1>
+    <h2><span th:text="${errorMessage}" th:if="${errorMessage}!='NONE'"/> </h2>
+    <form action="#" method="post" th:if="${errorMessage}=='NONE' or ${errorMessage}=='Update Category success'">
+        <table>
+            <tr>
+                <td>Name</td>
+                <td><input type="text" name="txtName" id="txtName" th:value="${category.name}"/></td>
+            </tr>
+            <tr>
+                <td>Distributor</td>
+                <td>
+                    <select name="txtDistributor" id="txtDistributor">
+                        <option th:each="distributor : ${lstDistributors}" th:value="${distributor.id}" th:text="${distributor.name}" th:selected="${distributor.id}==${distributorId}"></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" value="Update"/></td>
+            </tr>
+        </table>
+    </form>
+    <a th:href="@{/category/distributor/} + ${distributorId} + @{/list}" th:text="List"></a>
+</body>
+</html>
