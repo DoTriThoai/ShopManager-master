@@ -97,7 +97,7 @@ public class APIController {
     }
 
     // API for Category
-    @RequestMapping("category/fetch/distributor/{strDistributorId}")
+    @RequestMapping("/category/fetch/distributor/{strDistributorId}")
     public ResponseEntity<?> fetchCategoriesByDistributor(@PathVariable String strDistributorId){
         try {
             Integer distributorId = Integer.parseInt(strDistributorId);
@@ -111,7 +111,7 @@ public class APIController {
         }
     }
 
-    @RequestMapping(value = "category/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/category/save", method = RequestMethod.POST)
     public ResponseEntity<?> saveCategory(@RequestBody Category category){
         try {
             if (category.getName()==null || category.getName().isEmpty())
@@ -136,7 +136,7 @@ public class APIController {
         }
     }
 
-    @RequestMapping("category/fetch/{strId}")
+    @RequestMapping("/category/fetch/{strId}")
     public ResponseEntity<?> fetchCategoryById(@PathVariable String strId){
         try{
             Integer id = Integer.parseInt(strId);
@@ -147,6 +147,23 @@ public class APIController {
         }catch (Exception ex){
             return new ResponseEntity<Object>(new ErrorMessage(ErrorCode.ERROR, ex.getMessage()), HttpStatus.OK);
         }
+    }
+
+    @RequestMapping("/category/delete/{strId}")
+    public ResponseEntity<?> deleteCategory(@PathVariable String strId){
+        try {
+            Integer id = Integer.parseInt(strId);
+            Category category = categoryRepository.findOne(id);
+            if (category == null)
+                return new ResponseEntity<Object>(new ErrorMessage(ErrorCode.ERROR,"Category is available"), HttpStatus.OK);
+            List<Product> lstProduct = productRepository.findByCategory(category);
+            for (Product product :lstProduct)
+                productRepository.delete(product);
+            categoryRepository.delete(category);
+        }catch (Exception ex){
+            return new ResponseEntity<Object>(new ErrorMessage(ErrorCode.ERROR,ex.getMessage()), HttpStatus.OK);
+        }
+        return new ResponseEntity<Object>(new ErrorMessage(ErrorCode.ERROR,"Delete Category Success"), HttpStatus.OK);
     }
 
 

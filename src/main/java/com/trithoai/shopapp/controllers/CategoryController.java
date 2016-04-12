@@ -9,10 +9,7 @@ import com.trithoai.shopapp.models.ErrorMessage;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -186,6 +183,33 @@ public class CategoryController {
             model.addAttribute("errorMessage", ex.getMessage());
         }
         return "category/edit";
+    }
+
+    @RequestMapping(value="/delete",method=RequestMethod.GET)
+    @ResponseBody
+    public String getDeleteRoot(){
+        return "Forbiden";
+    }
+
+    @RequestMapping(value="/delete/{strId}",method=RequestMethod.GET)
+    @ResponseBody
+    public String getDeleteCategory(@PathVariable String strId){
+        RestTemplate restTemplate = new RestTemplate();
+        String strJson;
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        try {
+            Integer id = Integer.parseInt(strId);
+            ResponseEntity<String> responseEntity = restTemplate.exchange(URL_CATEGORY + "/delete/" + strId, HttpMethod.GET, null, String.class);
+            strJson = responseEntity.getBody();
+            if (responseEntity.getStatusCode() == HttpStatus.OK){
+                ErrorMessage errorMessage = gson.fromJson(strJson, ErrorMessage.class);
+                return errorMessage.getContent();
+            }
+        }catch (Exception ex){
+            return ex.getMessage();
+        }
+        return "Forbiden";
     }
 
 
