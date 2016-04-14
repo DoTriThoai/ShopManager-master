@@ -27,7 +27,9 @@ public class CategoryController {
     @RequestMapping("/distributor/{strDistributorId}/list")
     public String listAll(Model model, @PathVariable String strDistributorId){
         RestTemplate restTemplate = new RestTemplate();
+        //RestTemplate restTemplateD = new RestTemplate();
         String strJson;
+        //String strJsonD;
         try {
             Integer distributorId = Integer.parseInt(strDistributorId);
             ResponseEntity<String> responseEntity = restTemplate.exchange(URL_CATEGORY + "/fetch/distributor/" + strDistributorId, HttpMethod.GET, null, String.class);
@@ -37,9 +39,23 @@ public class CategoryController {
                 if (errorMessage.getErrorCode() == ErrorCode.SUCCESS){
                     TypeToken<List<Category>> typeToken = new TypeToken<List<Category>>(){};
                     List<Category> lstCategories = gson.fromJson(errorMessage.getContent(), typeToken.getType());
+
                     model.addAttribute("lstCategories", lstCategories);
                     model.addAttribute("errorMessage", "SUCCESS");
+                    model.addAttribute("errorMessageDelete", "NONE");
                     model.addAttribute("distributorId", strDistributorId);
+
+                    responseEntity = restTemplate.exchange(URL_DISTRIBUTOR + "/fetch", HttpMethod.GET, null, String.class);
+                    strJson = responseEntity.getBody();
+                    ErrorMessage distributorError = gson.fromJson(strJson, ErrorMessage.class);
+                    if (distributorError.getErrorCode() == ErrorCode.SUCCESS){
+                        TypeToken<List<Distributor>> typeTokenDistributors = new TypeToken<List<Distributor>>(){};
+                        List<Distributor> lstDistributor = gson.fromJson(distributorError.getContent(), typeTokenDistributors.getType());
+                        model.addAttribute("lstDistributors", lstDistributor);
+                    }else {
+                        model.addAttribute("errorMessage", distributorError.getContent());
+                    }
+
                 }else{
                     model.addAttribute("errorMessage", errorMessage.getContent());
                 }
@@ -211,6 +227,8 @@ public class CategoryController {
         }
         return "Forbiden";
     }
+
+
 
 
 
