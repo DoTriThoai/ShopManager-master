@@ -3,26 +3,128 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Category</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 </head>
 <body>
+    <h1>Create a new Category</h1>
+    <form id="createForm" >
+        <table>
+            <tr>
+                <td>Name</td>
+                <td><input type="text" name="txtName" id="distributorName" value=""/></td>
+            </tr>
+            <tr>
+                <td>Distributor</td>
+                <td>
+                    <select name="txtDistributor" id="txtDistributor">
+                        <option th:each="distributor : ${lstDistributors}" th:value="${distributor.id}" th:text="${distributor.name}"></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="button" value="Create" id="createButton"/></td>
+            </tr>
+        </table>
+    </form>
+
     <h1>List Categories</h1>
     <h1 th:text="${errorMessage}"
         th:if="${errorMessage != 'SUCCESS'}"></h1>
+    <h2 th:text="${errorMessageDelete}" th:if="${errorMessageDelete} != 'NONE'"></h2>
+    <input type="hidden" th:value="${distributorId}" th:id="distributorIdMaster"/>
     <a th:if="${errorMessage == 'SUCCESS'}" th:href="@{/category/distributor/} + ${distributorId} + @{/create}" th:text="Create"></a>
-    <table th:if="${errorMessage == 'SUCCESS'}" border="1">
-        <tr>
-            <td>Id</td>
-            <td>Category Name</td>
-            <td>Action</td>
-        </tr>
-        <tr th:each="category : ${lstCategories}">
-            <td th:text="${category.id}"></td>
-            <td th:text="${category.name}"></td>
-            <td>
-                <a th:href="@{/category/edit/} + ${category.id}" th:text="Edit"></a>
-                <a th:href="@{/category/delete/} + ${category.id}" th:text="Delete"></a>
-            </td>
-        </tr>
-    </table>
+    <div id="categoryTableDiv">
+        <table th:if="${errorMessage == 'SUCCESS'}" border="1" >
+            <tr>
+                <td>Id</td>
+                <td>Category Name</td>
+                <td>Action</td>
+            </tr>
+            <tr th:each="category : ${lstCategories}">
+                <td th:text="${category.id}"></td>
+                <td th:text="${category.name}"></td>
+                <td>
+                    <a th:href="@{/category/edit/} + ${category.id}" th:text="Edit"></a>
+                    <a th:href="@{/category/delete/} + ${category.id}" th:text="Delete"></a>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="result"></div>
+    <script >
+        $(document).ready(function(){
+            $('#distributorName').click(function(e) {
+                console.log('click');
+            });
+
+            $('#createButton').click(function(){
+                console.log($('#distributorName').val());
+                var e = document.getElementById("txtDistributor");
+                var strUser = e.options[e.selectedIndex].text;
+                var distributorId = e.options[e.selectedIndex].value;
+                console.log(distributorId + ' - ' +strUser);
+
+                console.log('get by jquery: '+$( "#txtDistributor option:selected").val());
+
+                creatViaAjax();
+            });
+
+        });
+
+        function creatViaAjax(){
+            var category = {}
+            category["name"] = $('#distributorName').val();
+            category["distributorId"] = $("#txtDistributor option:selected").val();
+            category["distributorIdMaster"] = $('#distributorIdMaster').val();
+
+            console.log(category);
+
+            $.ajax({
+                type : "POST",
+                contentType : "application/json; charset=utf-8",
+                url : "/categoryrest/ajax/create",
+                data : JSON.stringify(category),
+                dataType : 'json',
+                timeout : 100000,
+                success : function(data) {
+                    console.log("SUCCESS: ", data);
+                    display(data);
+                    clearForm();
+                },
+                error : function(e) {
+                    console.log("ERROR: ", e);
+                    //display(e);
+                },
+                done : function(e) {
+                    console.log("DONE");
+                }
+            });
+        }
+
+        function display(data){
+            $('#categoryTableDiv').hide();
+            var htmlStr = '';
+            $.each(data, function(k, v){
+                htmlStr += v.distributor.id + ' ' + v.distributor.name + ' ';
+                htmlStr += v.id + ' ' + v.name + '<br />';
+            });
+
+            $("#result").html(htmlStr);
+        }
+
+        function clearForm(){
+//            $(':input','#createForm')
+//                    .not(':button, :submit, :reset, :hidden')
+//                    .val('')
+//                    .removeAttr('checked')
+//                    .removeAttr('selected');
+            $('#createForm').get(0).reset();
+        };
+
+    </script>
 </body>
 </html>
+
+
